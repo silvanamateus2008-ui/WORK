@@ -8,12 +8,12 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI','sqlite:///default.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT-SECRET_KEY', 'clave-insegura')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'clave-insegura')
 
 from models import db
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
-db.imit_app(app)
+db.init_app(app)
 migrate = Migrate(app,db)
 jwt = JWTManager(app)
 
@@ -21,6 +21,8 @@ from routes import api_bp
 
 app.register_blueprint(api_bp, url_prefix='/api')
 
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
     puerto= int(os.getenv('PORT', 5000))
